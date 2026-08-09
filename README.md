@@ -6,29 +6,65 @@ A memecoin and a 10,000-piece generative NFT collection built around one idea: a
 
 ---
 
-## Repo contents
+## Repo layout
 
-| File | What it is |
-|---|---|
-| `index.html` | The entire site. One file, no build step, no dependencies. |
-| `traits.js` | Trait engine — tables, SVG art, seeded generator. Shared by site and generator. |
-| `gen.js` | Node script. Builds the 10,000-kid Genesis collection, verifies uniqueness. |
-| `sheet.js` | Node script. Renders `contact-sheet.html` for pitch material. |
-| `collection.json` | Generated Genesis pool (~1.6 MB). Regenerate, don't hand-edit. |
-| `LAUNCH.md` | Step-by-step launch runbook. |
-
-### Running locally
-
-```bash
-# the site — no build, just open it
-open index.html
-
-# regenerate the collection (requires node)
-node gen.js       # -> collection.json, prints uniqueness proof + rarity report
-node sheet.js     # -> contact-sheet.html
+```
+bounce-house/
+│
+├── src/                      ← edit here. nothing else.
+│   ├── traits.js             trait tables + SVG art · SINGLE SOURCE OF TRUTH
+│   ├── app.js                state, physics, UI
+│   └── index.template.html   markup + CSS
+│
+├── tools/
+│   ├── gen.js                builds the 10,000 · proves uniqueness
+│   └── sheet.js              renders the contact sheet
+│
+├── data/
+│   ├── collection.json       generated · never hand-edit
+│   └── SEED.md               seed + SHA-256 · the fairness proof
+│
+├── dist/
+│   └── index.html            ← deploy this. never edit by hand.
+│
+├── docs/
+│   └── contact-sheet.html    generated · pitch material
+│
+├── program/                  Anchor program · empty until Phase 3
+│
+├── build.js                  src/ → dist/index.html
+├── package.json              four scripts, zero dependencies
+├── README.md                 mechanics, odds, caps, decisions
+├── LAUNCH.md                 the runbook
+└── .gitignore
 ```
 
-Deploy is a drag-and-drop of `index.html` to Netlify Drop, Vercel, or Cloudflare Pages.
+**Never edit `dist/index.html` by hand.** It is generated. `traits.js` is read by both the site and the generator, so the collection and the live site can never disagree — that was a real bug once.
+
+### Commands
+
+```bash
+npm run build     # src/ -> dist/index.html
+npm run gen       # -> data/collection.json + uniqueness proof
+npm run sheet     # -> docs/contact-sheet.html
+npm run all       # gen + sheet + build
+```
+
+No dependencies, no install step. Node for the tools, nothing for the site.
+
+Deploy is a drag-and-drop of `dist/index.html` to Netlify Drop, Vercel, or Cloudflare Pages.
+
+### Daily workflow
+
+```bash
+git checkout -b tweak/whatever
+# edit src/
+npm run all
+open dist/index.html          # eyeball it
+git add -A && git commit -m "..."
+```
+
+Run `npm run gen` after **any** change to `traits.js` — the collection is derived from it. If rarity counts move, update `data/SEED.md`.
 
 ---
 

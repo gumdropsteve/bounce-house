@@ -1,0 +1,12 @@
+{
+  "name": "bounce-house",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Solana is crypto's bounce house.",
+  "scripts": {
+    "build": "node build.js",
+    "gen": "node tools/gen.js",
+    "sheet": "node tools/sheet.js",
+    "all": "npm run gen && npm run sheet && npm run build"
+  }
+}
